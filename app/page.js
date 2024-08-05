@@ -4,6 +4,7 @@ import { Typography, Box, Modal, Stack, TextField, Button } from '@mui/material'
 import { firestore } from '@/firebase';
 import { query, collection, getDoc, getDocs, deleteDoc, setDoc, doc } from 'firebase/firestore';
 import SearchBar from './components/SearchBar';
+import WebCamCapture from './components/WebCamCapture';
 
 
 export default function Home() {
@@ -11,6 +12,7 @@ export default function Home() {
   const [searchResults, setSearchResults] = useState([]);
   const [open, setOpen] = useState(false);
   const [itemName, setItemName] = useState('');
+  const [showWebcam, setShowWebcam] = useState(false);
 
   useEffect(() => {
     updatePantry();
@@ -69,6 +71,9 @@ export default function Home() {
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
 
+  const handleWebcamOpen = () => setShowWebcam(true);
+  const handleWebcamClose = () => setShowWebcam(false);
+
   return (
     <Box width="100vw" height="100vh" display="flex" flexDirection={'column'} justifyContent={'center'} alignItems={'center'} gap="2">
       <Modal open={open} onClose={handleClose}>
@@ -77,30 +82,30 @@ export default function Home() {
           <Typography variant="h6">Add Item</Typography>
           <Stack width="100%" direction={"row"} spacing={2}>
             <TextField variant="outlined" fullWidth value={itemName} onChange={(e) => setItemName(e.target.value)} sx={{
-          '& .MuiOutlinedInput-root': {
-            '& fieldset': {
-              borderColor: 'white', // Border color
-            },
-            '&:hover fieldset': {
-              borderColor: 'white', // Hover border color
-            },
-            '&.Mui-focused fieldset': {
-              borderColor: 'white', // Focused border color
-            },
-          },
-          '& .MuiInputBase-root': {
-            color: 'white', // Ensure input text color is white
-          },
-          '& .MuiFormLabel-root': {
-            color: 'white', // Ensure label text color is white
-          },
-        }}/>
+              '& .MuiOutlinedInput-root': {
+                '& fieldset': {
+                  borderColor: 'white', // Border color
+                },
+                '&:hover fieldset': {
+                  borderColor: 'white', // Hover border color
+                },
+                '&.Mui-focused fieldset': {
+                  borderColor: 'white', // Focused border color
+                },
+              },
+              '& .MuiInputBase-root': {
+                color: 'white', // Ensure input text color is white
+              },
+              '& .MuiFormLabel-root': {
+                color: 'white', // Ensure label text color is white
+              },
+            }} />
             <Button variant="contained" sx={{
-          backgroundColor: 'darkred', // Background color
-          '&:hover': {
-            backgroundColor: '#B22222', // Background color on hover
-          },
-        }} onClick={() => { addItem(itemName); setItemName(""); handleClose(); }}>Add</Button>
+              backgroundColor: 'darkred', // Background color
+              '&:hover': {
+                backgroundColor: '#B22222', // Background color on hover
+              },
+            }} onClick={() => { addItem(itemName); setItemName(""); handleClose(); }}>Add</Button>
           </Stack>
         </Box>
       </Modal>
@@ -119,28 +124,51 @@ export default function Home() {
               <Typography variant="h4" color="darkred" textAlign={'center'}>{quantity}</Typography>
               <Stack direction={'row'} spacing={2}>
                 <Button variant='contained' sx={{
-          backgroundColor: 'darkred', // Background color
-          '&:hover': {
-            backgroundColor: '#B22222', // Background color on hover
-          },
-        }} onClick={() => addItem(name)}>Add</Button>
+                  backgroundColor: 'darkred', // Background color
+                  '&:hover': {
+                    backgroundColor: '#B22222', // Background color on hover
+                  },
+                }} onClick={() => addItem(name)}>Add</Button>
                 <Button variant='contained' sx={{
-          backgroundColor: 'darkred', // Background color
-          '&:hover': {
-            backgroundColor: '#B22222', // Background color on hover
-          },
-        }} onClick={() => removeItem(name)}>Remove</Button>
+                  backgroundColor: 'darkred', // Background color
+                  '&:hover': {
+                    backgroundColor: '#B22222', // Background color on hover
+                  },
+                }} onClick={() => removeItem(name)}>Remove</Button>
               </Stack>
             </Box>
           ))}
         </Stack>
-        <Box display={'flex'} justifyContent={'center'} alignItems={'center'} p={4}>
-        <Button variant="contained" justifyContent="center" m={3} sx={{
-          backgroundColor: 'darkred', // Background color
-          '&:hover': {
-            backgroundColor: '#B22222', // Background color on hover
-          },
+        <Box display={'flex'} justifyContent={'center'} alignItems={'center'} p={4} gap={5}>
+          <Button variant="contained" justifyContent="center" m={3} sx={{
+            backgroundColor: 'darkred', // Background color
+            '&:hover': {
+              backgroundColor: '#B22222', // Background color on hover
+            },
           }} onClick={handleOpen}>Add New Item</Button>
+
+       {/* Button to show webcam */}
+       <Button variant="contained" sx={{
+            backgroundColor: 'darkred', // Background color
+            '&:hover': {
+              backgroundColor: '#B22222', // Background color on hover
+            },
+          }} onClick={handleWebcamOpen}>Upload Image</Button>
+
+          {/* Conditionally render the WebcamCapture component */}
+          {showWebcam && (
+            <Box position="fixed" top={0} left={0} width="100vw" height="100vh" display="flex" justifyContent="center" alignItems="center" bgcolor="rgba(0,0,0,0.5)">
+              <Box width="300px" display="flex" flexDirection="column" alignItems="center" bgcolor="floralwhite" p={2} borderRadius={2}>
+                <WebCamCapture onCapture={handleWebcamClose} />
+                <Button variant="contained" sx={{
+            backgroundColor: 'darkred', // Background color
+            '&:hover': {
+              backgroundColor: '#B22222', // Background color on hover
+            },mt: 2
+          }} onClick={handleWebcamClose}>Close Webcam</Button>
+              </Box>
+            </Box>
+          )}
         </Box>
       </Box>
     </Box>
